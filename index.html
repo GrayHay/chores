@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chorse</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="content">
+      <button onclick="showGraysonText()">Grayson</button>
+      <button onclick="showTeaganText()">Teagan</button>
+      <h5 id="personTag"></h5>
+      <h4>Click an item to complete</h4>
+
+      <script>
+        function showGraysonText() {
+          fetch("grayson.txt")
+            .then((response) => response.text())
+            .then((text) => {
+              displayText("Grayson", text);
+            });
+        }
+
+        function showTeaganText() {
+          fetch("teagan.txt")
+            .then((response) => response.text())
+            .then((text) => {
+              displayText("Teagan", text);
+            });
+        }
+
+        function displayText(person, text) {
+          const lines = text.split("\n");
+          const contentDiv = document.getElementById("content");
+          const personTag = document.getElementById("personTag");
+          contentDiv.innerHTML = ""; // Clear previous content
+
+          personTag.textContent = person;
+
+          let currentCategory = null;
+          let day = new Date().getDate();
+
+          lines.forEach((line) => {
+            if (line.startsWith("+")) {
+              currentCategory = line.replace("+", "").trim();
+              const categoryTitle = document.createElement("h3");
+              categoryTitle.textContent = currentCategory;
+              contentDiv.appendChild(categoryTitle);
+            } else if (line.trim() !== "") {
+              const paragraph = document.createElement("p");
+              paragraph.textContent = line.replace(/[@#]/g, ""); // Remove "@" and "#" symbols
+              paragraph.style.cursor = "pointer"; // Add pointer cursor
+
+              // Check line starting with "@" for even day
+              if (line.startsWith("@") && day % 2 === 0) {
+                paragraph.style.display = "block";
+              }
+              // Check line starting with "@" for odd day
+              else if (line.startsWith("@") && day % 2 !== 0) {
+                paragraph.style.display = "none";
+              }
+              // Check line starting with "#" for odd day
+              else if (line.startsWith("#") && day % 2 !== 0) {
+                paragraph.style.display = "none";
+              }
+              // Check line starting with "#" for even day
+              else if (line.startsWith("#") && day % 2 === 0) {
+                paragraph.style.display = "block";
+              }
+
+              paragraph.addEventListener("click", function () {
+                paragraph.classList.toggle("striked");
+              });
+              contentDiv.appendChild(paragraph);
+            }
+          });
+        }
+      </script>
+    </div>
+  </body>
+</html>
